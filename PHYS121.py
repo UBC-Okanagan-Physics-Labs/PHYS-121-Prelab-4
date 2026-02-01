@@ -2090,3 +2090,52 @@ def Phase(xData, yData, yErrors = [], start = [220, 50], xlabel = 'x-axis', ylab
         # Show the final plot.
         plt.show()
     return w0_fit, gamma_fit, errw0, errgamma, fig
+
+
+
+
+
+###############################################################################
+# Report the time since last notebook save                                    #                                
+# - modified 20260115                                                         #
+############################################################################### 
+def save_time():
+    import time, pathlib, datetime
+
+    cwd = pathlib.Path().resolve()
+    ipynbs = list(cwd.glob("*.ipynb"))
+
+    lines = []
+    lines.append(f"Kernel working directory: {cwd}")
+    lines.append(
+        f"Log generated at: "
+        f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+
+    if not ipynbs:
+        lines.append("⚠️ No notebook file found in this folder.")
+    else:
+        latest = max(ipynbs, key=lambda p: p.stat().st_mtime)
+        age = time.time() - latest.stat().st_mtime
+        mtime = datetime.datetime.fromtimestamp(
+            latest.stat().st_mtime
+        ).strftime("%Y-%m-%d %H:%M:%S")
+
+        lines.append(f"🕒 Time since last notebook save: {age:.1f} seconds")
+        lines.append(f"📓 Most recently saved notebook: {latest.name}")
+        lines.append(f"📅 That notebook's last-modified time: {mtime}")
+
+        if age > 10:
+            lines.append("")
+            lines.append(
+                "⚠️ If you made any changes since the last save, "
+                "please save the notebook (Ctrl/Cmd-S) and then rerun this export cell."
+            )
+
+    text = "\n".join(lines) + "\n"
+
+    # Print for the student
+    print(text)
+
+    # Write for grading/auditing
+    (cwd / "save_time.txt").write_text(text, encoding="utf-8")
